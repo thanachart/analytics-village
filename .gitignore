@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+*.egg
+.venv/
+venv/
+
+# Node
+frontend/node_modules/
+
+# SQLite temp files
+*.db-shm
+*.db-wal
+*.db-journal
+
+# Facilitator local state
+facilitator.db
+
+# Test output
+output_test/
+test_village.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,168 @@
+/* ══════════════════════════════════════════════════════════════
+   Analytics Village — Masonry Tile Design System
+   Based on ARIA Villa 12-column grid pattern
+   ══════════════════════════════════════════════════════════════ */
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{height:100%;overflow:hidden;background:#f4f4f2;color:#111;font-family:'Inter','Segoe UI',system-ui,sans-serif}
+
+/* ── Layout ──────────────────────────────────────────────────── */
+.app-layout{display:flex;height:100vh;flex-direction:column}
+.app-topbar{height:52px;display:flex;align-items:center;padding:0 24px;background:#fff;border-bottom:1px solid #e8e8e8;flex-shrink:0;gap:16px;z-index:10}
+.app-brand{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#333;font-weight:700;white-space:nowrap}
+.app-brand-icon{font-size:18px;margin-right:8px}
+.topbar-sep{width:1px;height:24px;background:#e8e8e8}
+.topbar-status{display:flex;align-items:center;gap:6px;margin-left:auto}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#e0e0e0;transition:background .3s}
+.status-dot.ok{background:#22c55e}
+.status-dot.busy{background:#f59e0b;animation:pulse 1.5s infinite}
+.status-dot.err{background:#ef4444}
+.status-label{font-size:10px;color:#999;letter-spacing:.5px;text-transform:uppercase}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.app-body{display:flex;flex:1;overflow:hidden}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.sidebar{width:200px;flex-shrink:0;background:#fff;border-right:1px solid #e8e8e8;display:flex;flex-direction:column;padding:16px 0}
+.sidebar-section{padding:8px 16px}
+.sidebar-label{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:#bbb;font-weight:700;margin-bottom:12px}
+.sidebar-nav{list-style:none;display:flex;flex-direction:column;gap:2px;padding:0 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:#555;font-weight:500;transition:all .12s;text-decoration:none}
+.nav-item:hover{background:#f5f8ff;color:#1d4ed8}
+.nav-item.active{background:#eef2ff;color:#1d4ed8;font-weight:600}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid #f0f0f0}
+.sim-status{display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;background:#f9fafb}
+.sim-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sim-status-text{font-size:11px;color:#666;font-weight:500}
+
+/* ── Main content ────────────────────────────────────────────── */
+.main-content{flex:1;overflow-y:auto;padding:24px}
+.page-header{margin-bottom:24px;display:flex;align-items:center;justify-content:space-between}
+.page-title{font-size:22px;font-weight:600;color:#111;letter-spacing:-.3px}
+.page-subtitle{font-size:13px;color:#888;margin-top:4px}
+
+/* ── 12-Column Masonry Grid ──────────────────────────────────── */
+.wall-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;align-items:start}
+
+/* ── Tile Base ───────────────────────────────────────────────── */
+.tile{background:#fff;border:1px solid #e8e8e8;border-radius:10px;overflow:hidden;animation:tilein .35s ease both}
+@keyframes tilein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tile-header{padding:14px 18px 10px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+.tile-label{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:#bbb;font-weight:700}
+.tile-badge{font-size:9px;font-weight:700;padding:2px 10px;border-radius:10px}
+.tile-badge.high,.tile-badge.green{background:#dcfce7;color:#16a34a}
+.tile-badge.medium,.tile-badge.yellow{background:#fef9c3;color:#a16207}
+.tile-badge.low,.tile-badge.red{background:#fee2e2;color:#dc2626}
+.tile-badge.blue{background:#dbeafe;color:#1d4ed8}
+.tile-badge.gray{background:#f3f4f6;color:#6b7280}
+.tile-body{padding:18px}
+
+/* Tile spans */
+.tile-stat{grid-column:span 3}
+.tile-chart{grid-column:span 5}
+.tile-finding{grid-column:span 7}
+.tile-half{grid-column:span 6}
+.tile-full{grid-column:span 12}
+.tile-third{grid-column:span 4}
+
+/* ── Stat Tile ───────────────────────────────────────────────── */
+.stat-num{font-size:32px;font-weight:300;color:#111;line-height:1;margin-bottom:6px;letter-spacing:-1px}
+.stat-label{font-size:11px;color:#888;font-weight:500;margin-bottom:10px}
+.stat-bar{height:3px;background:#f0f0f0;border-radius:2px;overflow:hidden;margin-top:10px}
+.stat-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.stat-fill.g{background:#22c55e}
+.stat-fill.y{background:#f59e0b}
+.stat-fill.r{background:#ef4444}
+.stat-fill.b{background:#1d4ed8}
+.stat-delta{font-size:12px;font-weight:600;margin-top:6px}
+.stat-delta.g{color:#16a34a}
+.stat-delta.y{color:#d97706}
+.stat-delta.r{color:#dc2626}
+
+/* ── Finding Tile ────────────────────────────────────────────── */
+.finding-text{font-size:15px;color:#111;line-height:1.85;font-weight:400}
+.finding-meta{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid #f5f5f5;flex-wrap:wrap}
+.fm-source{font-size:10px;color:#bbb;font-weight:500}
+
+/* ── Chart Tile ──────────────────────────────────────────────── */
+.chart-inner{height:200px;position:relative}
+
+/* ── Full Width Tile ─────────────────────────────────────────── */
+.tile-syn{grid-column:span 12;background:#f0f6ff;border-color:#bfdbfe}
+.tile-actions{grid-column:span 12}
+
+/* ── Actions Grid ────────────────────────────────────────────── */
+.acts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.act-card{border:1px solid #eee;border-radius:8px;padding:16px;transition:all .12s}
+.act-card:hover{border-color:#1d4ed8;box-shadow:0 2px 12px rgba(29,78,216,.06)}
+.ac-title{font-size:14px;font-weight:600;color:#111;margin-bottom:6px}
+.ac-desc{font-size:12px;color:#666;line-height:1.6;margin-bottom:12px}
+.ac-meta{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:12px}
+.ac-meta-item{font-size:10px;color:#bbb}
+.ac-meta-item span{color:#555;font-weight:600}
+
+/* ── Episode Cards ───────────────────────────────────────────── */
+.episode-card{background:#fff;border:1px solid #e8e8e8;border-radius:10px;padding:20px;cursor:pointer;transition:all .15s}
+.episode-card:hover{border-color:#1d4ed8;transform:translateY(-2px);box-shadow:0 6px 20px rgba(29,78,216,.08)}
+.ep-number{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#1d4ed8;font-weight:700;margin-bottom:6px}
+.ep-title{font-size:16px;font-weight:600;color:#111;margin-bottom:8px}
+.ep-meta{font-size:12px;color:#888;line-height:1.6}
+.ep-status{display:inline-block;font-size:9px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:.5px;text-transform:uppercase;margin-top:10px}
+.ep-status.draft{background:#f3f4f6;color:#6b7280}
+.ep-status.active{background:#dcfce7;color:#16a34a}
+.ep-status.completed{background:#dbeafe;color:#1d4ed8}
+.ep-status.generating{background:#fef9c3;color:#a16207}
+.ep-status.archived{background:#f3f4f6;color:#9ca3af}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;border:1.5px solid;letter-spacing:.3px}
+.btn-primary{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.btn-primary:hover{background:#1e40af}
+.btn-secondary{background:#fff;color:#555;border-color:#e0e0e0}
+.btn-secondary:hover{border-color:#1d4ed8;color:#1d4ed8}
+.btn-danger{background:#fff;color:#dc2626;border-color:#fecaca}
+.btn-danger:hover{background:#fef2f2;border-color:#dc2626}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-lg{padding:12px 28px;font-size:14px}
+
+/* ── Forms ────────────────────────────────────────────────────── */
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:11px;font-weight:600;color:#555;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.form-input,.form-select,.form-textarea{width:100%;border:1px solid #e0e0e0;border-radius:6px;padding:10px 14px;font-size:13px;color:#333;background:#fff;transition:border-color .15s;font-family:inherit}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:#1d4ed8}
+.form-textarea{min-height:80px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
+/* ── Tables ───────────────────────────────────────────────────── */
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{text-align:left;padding:10px 14px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#999;font-weight:600;border-bottom:2px solid #e8e8e8}
+.data-table td{padding:10px 14px;border-bottom:1px solid #f0f0f0;color:#333}
+.data-table tr:hover td{background:#f9fafb}
+
+/* ── Progress Bar ────────────────────────────────────────────── */
+.progress-bar{height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:#1d4ed8;border-radius:4px;transition:width .3s ease}
+
+/* ── Tabs ─────────────────────────────────────────────────────── */
+.tab-row{display:flex;gap:0;border-bottom:2px solid #e8e8e8;margin-bottom:24px}
+.tab{padding:10px 20px;font-size:12px;font-weight:600;color:#999;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s;letter-spacing:.3px}
+.tab:hover{color:#555}
+.tab.active{color:#1d4ed8;border-bottom-color:#1d4ed8}
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;opacity:.5}
+.empty-icon{font-size:48px;margin-bottom:16px}
+.empty-text{font-size:14px;color:#888;text-align:center}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .tile-stat{grid-column:span 4}
+  .tile-finding{grid-column:span 8}
+  .tile-chart{grid-column:span 4}
+}
+@media (max-width: 900px) {
+  .sidebar{display:none}
+  .tile-stat,.tile-chart,.tile-finding,.tile-half{grid-column:span 12}
+}
