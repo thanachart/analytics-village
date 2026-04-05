@@ -15,7 +15,7 @@ from typing import Callable
 from .database import VillageDB
 from .schema import create_village_db
 from .world import WorldState, SimConfig, CalendarDay, LifecycleState, EventType
-from .physics import fast_score, pantry_tick, reset_weekly_budget, apply_payday_boost
+from .physics import fast_score, pantry_tick, reset_weekly_budget, apply_payday_boost, is_budget_reset_day
 from .catalogue import (
     seed_businesses, seed_households, seed_skus, seed_suppliers,
     seed_calendar, seed_initial_stock,
@@ -95,8 +95,13 @@ def run_history(
     # ── Load world state ─────────────────────────────────────────
     world = WorldState.from_db(db, config)
 
-    # Assign initial lifecycle states
-    assign_initial_lifecycle_states(world, config, rng)
+    # In history mode: all households start as "retained" (they've been shopping here)
+    # The lifecycle scanner will naturally create at_risk/churned during the simulation
+    for hh in world.active_households():
+        hh.lifecycle_state = "retained"
+        hh.last_visit_day = first_day - rng.randint(1, 5)  # recently visited
+        hh.total_visits = rng.randint(5, 30)
+        hh.first_visit_day = first_day - rng.randint(30, 365)
 
     # Initialize budgets
     for hh in world.active_households():
@@ -125,13 +130,13 @@ def run_history(
         world.start_day(day)
         cal = world.get_calendar_day(day)
 
-        # Monday: reset budgets
-        if cal.day_of_week == "monday":
+        # Budget reset every 7 days (works with negative days)
+        if is_budget_reset_day(day):
             for hh in world.active_households():
                 reset_weekly_budget(hh, rng)
 
         # Payday boost
-        if cal.is_payday_week and cal.day_of_month == config.payday_day:
+        if cal.is_payday_week:
             for hh in world.active_households():
                 apply_payday_boost(hh)
 

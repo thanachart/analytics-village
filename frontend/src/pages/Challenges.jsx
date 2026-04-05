@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../api'
 import { TileGrid, FullWidthTile } from '../components/TileGrid'
 
@@ -146,8 +147,8 @@ export default function Challenges() {
 
       <TileGrid>
         {episodes.length > 0 ? episodes.map(ep => (
-          <div key={ep.episode_id} className="tile tile-third">
-            <div className="tile-body">
+          <div key={ep.episode_id} style={{ gridColumn: 'span 4' }}>
+            <div className="episode-card">
               <div className="ep-number">{ep.episode_id}</div>
               <div className="ep-title">{ep.title || ep.episode_id.toUpperCase()}</div>
               <div className="ep-meta">
@@ -155,6 +156,10 @@ export default function Challenges() {
                 {ep.challenge_type?.replace(/_/g, ' ')}
               </div>
               <span className={`ep-status ${ep.status}`}>{ep.status}</span>
+              <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                <Link to={`/challenges/${ep.episode_id}/dashboard`} className="btn btn-primary btn-sm">Dashboard</Link>
+                <Link to={`/challenges/${ep.episode_id}`} className="btn btn-secondary btn-sm">Manage</Link>
+              </div>
             </div>
           </div>
         )) : (

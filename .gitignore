@@ -10,17 +10,17 @@ venv/
 # Node
 frontend/node_modules/
 
-# SQLite temp files
+# SQLite temp
 *.db-shm
 *.db-wal
 *.db-journal
 
-# Facilitator local state
+# Facilitator (instructor-only, not pushed to public repo)
 facilitator.db
-
-# Test output
+output/
 output_test/
 test_village.db
+data/
 
 # IDE
 .vscode/

@@ -349,103 +349,112 @@ class TransactionEngine:
         day: int,
     ) -> list[dict]:
         """
-        Generate a basket using rule-based logic (no LLM).
-        Selects items based on persona weights, pantry urgency, and habits.
+        Generate a realistic basket. Target: 5-12 items, 150-500 THB per visit.
+        Thai grocery shopping: rice, veg, meat, eggs, milk, snacks, drinks.
         """
         business = self.world.businesses.get(business_id)
         if not business:
             return []
 
-        # Get SKUs for this business
         biz_skus = [s for s in self.world.skus.values()
                      if s.business_id == business_id]
         if not biz_skus:
             return []
 
-        basket = []
-
-        # Priority 1: Staples based on pantry urgency
-        staple_categories = ["dairy", "fresh_produce", "meat", "dry_goods"]
-        if hh.pantry_urgency > 0.6:
-            # Urgent: buy more staples
-            num_staples = self.rng.randint(3, 7)
-        elif hh.pantry_urgency > 0.3:
-            num_staples = self.rng.randint(2, 4)
-        else:
-            num_staples = self.rng.randint(1, 2)
-
-        staple_skus = [s for s in biz_skus if s.category in staple_categories
-                       and not s.is_impulse]
-        self.rng.shuffle(staple_skus)
-        for sku in staple_skus[:num_staples]:
-            qty = self.rng.randint(1, 3)
-            basket.append({
-                "sku_id": sku.sku_id,
-                "qty": qty,
-                "unit_price": sku.base_price_thb,
-                "is_impulse": False,
-                "storage_type": sku.storage_type,
-                "unit_volume_L": sku.unit_volume_L or 0.5,
-                "category": sku.category,
-                "priority": 1,
-            })
-
-        # Priority 2: Household items (if pantry urgency is moderate)
-        if hh.pantry_urgency > 0.4:
-            household_skus = [s for s in biz_skus if s.category == "household"]
-            if household_skus and self.rng.random() < 0.3:
-                sku = self.rng.choice(household_skus)
-                basket.append({
-                    "sku_id": sku.sku_id,
-                    "qty": 1,
-                    "unit_price": sku.base_price_thb,
-                    "is_impulse": False,
-                    "storage_type": sku.storage_type,
-                    "unit_volume_L": sku.unit_volume_L or 0.5,
-                    "category": sku.category,
-                    "priority": 3,
-                })
-
-        # Priority 3: Beverages (routine purchases)
-        bev_skus = [s for s in biz_skus if s.category == "beverage"]
-        if bev_skus and self.rng.random() < 0.4:
-            sku = self.rng.choice(bev_skus)
-            basket.append({
-                "sku_id": sku.sku_id,
-                "qty": 1,
-                "unit_price": sku.base_price_thb,
-                "is_impulse": sku.is_impulse,
-                "storage_type": sku.storage_type,
-                "unit_volume_L": sku.unit_volume_L or 0.5,
-                "category": sku.category,
-                "priority": 4,
-            })
-
-        # Priority 4: Impulse items (snacks, treats)
-        impulse_skus = [s for s in biz_skus if s.is_impulse]
-        if impulse_skus:
-            # Higher income → more impulse buys
-            impulse_prob = 0.15 if hh.income_bracket == "low" else (
-                0.30 if hh.income_bracket == "medium" else 0.45
-            )
-            if self.rng.random() < impulse_prob:
-                sku = self.rng.choice(impulse_skus)
-                basket.append({
-                    "sku_id": sku.sku_id,
-                    "qty": 1,
-                    "unit_price": sku.base_price_thb,
-                    "is_impulse": True,
-                    "storage_type": sku.storage_type,
-                    "unit_volume_L": sku.unit_volume_L or 0.5,
-                    "category": sku.category,
-                    "priority": 10,
-                })
-
-        # For coffee shop: simpler basket (1-2 items)
+        # For coffee shop: just 1-3 items
         if business.business_type == "food_beverage":
-            basket = basket[:2] if len(basket) > 2 else basket
+            self.rng.shuffle(biz_skus)
+            n = self.rng.randint(1, 3)
+            return [self._sku_to_basket_item(s, 1) for s in biz_skus[:n]]
+
+        basket = []
+        by_cat = {}
+        for s in biz_skus:
+            by_cat.setdefault(s.category, []).append(s)
+
+        # Determine basket size based on household size and urgency
+        base_items = 3 + hh.household_size  # 4-9 items base
+        if hh.pantry_urgency > 0.7:
+            base_items += self.rng.randint(2, 5)  # big shop when pantry is low
+        elif hh.pantry_urgency > 0.4:
+            base_items += self.rng.randint(1, 3)
+
+        # Budget target: spend ~25-40% of weekly budget per visit
+        target_spend = hh.budget_remaining_thb * self.rng.uniform(0.25, 0.45)
+
+        # === CORE STAPLES (always buy some) ===
+        # Fresh produce (2-4 items) — Thai cooking essential
+        if "fresh_produce" in by_cat:
+            n = self.rng.randint(2, min(4, len(by_cat["fresh_produce"])))
+            picks = self.rng.sample(by_cat["fresh_produce"], n)
+            for s in picks:
+                basket.append(self._sku_to_basket_item(s, self.rng.randint(1, 2)))
+
+        # Meat/protein (1-2 items)
+        if "meat" in by_cat:
+            n = self.rng.randint(1, min(2, len(by_cat["meat"])))
+            picks = self.rng.sample(by_cat["meat"], n)
+            for s in picks:
+                basket.append(self._sku_to_basket_item(s, 1))
+
+        # Dairy (1-2 items)
+        if "dairy" in by_cat:
+            n = self.rng.randint(1, min(2, len(by_cat["dairy"])))
+            picks = self.rng.sample(by_cat["dairy"], n)
+            for s in picks:
+                basket.append(self._sku_to_basket_item(s, 1))
+
+        # Dry goods (0-2 items — rice, noodles, oil, sauce)
+        if "dry_goods" in by_cat and self.rng.random() < 0.6:
+            n = self.rng.randint(1, min(2, len(by_cat["dry_goods"])))
+            picks = self.rng.sample(by_cat["dry_goods"], n)
+            for s in picks:
+                basket.append(self._sku_to_basket_item(s, 1))
+
+        # === REGULAR ADDITIONS ===
+        # Beverages (very common — water, coffee, tea)
+        if "beverage" in by_cat and self.rng.random() < 0.65:
+            sku = self.rng.choice(by_cat["beverage"])
+            basket.append(self._sku_to_basket_item(sku, 1))
+
+        # Household items (20% chance per trip)
+        if "household" in by_cat and self.rng.random() < 0.20:
+            sku = self.rng.choice(by_cat["household"])
+            basket.append(self._sku_to_basket_item(sku, 1))
+
+        # Frozen (15% chance)
+        if "frozen" in by_cat and self.rng.random() < 0.15:
+            sku = self.rng.choice(by_cat["frozen"])
+            basket.append(self._sku_to_basket_item(sku, 1))
+
+        # === IMPULSE ===
+        # Snacks (30-50% chance depending on income)
+        impulse_prob = {"low": 0.25, "medium": 0.40, "high": 0.55}.get(hh.income_bracket, 0.35)
+        if "snacks" in by_cat and self.rng.random() < impulse_prob:
+            n = self.rng.randint(1, 2)
+            picks = self.rng.sample(by_cat["snacks"], min(n, len(by_cat["snacks"])))
+            for s in picks:
+                basket.append(self._sku_to_basket_item(s, 1, impulse=True))
+
+        # === LARGER HOUSEHOLDS buy more quantities ===
+        if hh.household_size >= 4:
             for item in basket:
-                item["qty"] = 1
+                if item["category"] in ("dairy", "fresh_produce", "meat") and self.rng.random() < 0.4:
+                    item["qty"] = min(item["qty"] + 1, 3)
+
+        return basket
+
+    def _sku_to_basket_item(self, sku, qty, impulse=False):
+        return {
+            "sku_id": sku.sku_id,
+            "qty": qty,
+            "unit_price": sku.base_price_thb,
+            "is_impulse": impulse or sku.is_impulse,
+            "storage_type": sku.storage_type,
+            "unit_volume_L": sku.unit_volume_L or 0.5,
+            "category": sku.category,
+            "priority": 10 if (impulse or sku.is_impulse) else 1,
+        }
 
         return basket
 
@@ -479,27 +488,46 @@ class TransactionEngine:
             shelf_current = self.get_shelf_stock(business_id, sku.sku_id)
             units_sold = max(0, shelf_open - shelf_current)
 
-            # Morning restock from warehouse
+            # Morning restock from warehouse → shelf
             shelf_replenished = 0
-            if shelf_open < 10 and warehouse_open > 0:
-                restock = min(warehouse_open, 20)
+            if shelf_current < 20 and warehouse_open > 0:
+                restock = min(warehouse_open, 30)
                 shelf_replenished = restock
                 shelf_current += restock
                 warehouse_open -= restock
 
-            # Expiry check
+            # Daily supplier delivery: auto-replenish warehouse when total stock is low
+            # This simulates regular ordering — store keeps ~50-100 units per SKU
+            units_delivered = 0
+            target_stock = self.rng.randint(40, 80)  # target per SKU
+            total_current = shelf_current + warehouse_open
+            if total_current < target_stock:
+                # Delivery arrives (with some randomness in fill)
+                order_qty = target_stock - total_current + self.rng.randint(0, 15)
+                # Supplier reliability: sometimes partial delivery
+                fill = self.rng.uniform(0.75, 1.0)
+                units_delivered = max(1, int(order_qty * fill))
+                warehouse_open += units_delivered
+
+            # Morning restock again after delivery
+            if shelf_current < 15 and warehouse_open > 0:
+                extra = min(warehouse_open, 20)
+                shelf_replenished += extra
+                shelf_current += extra
+                warehouse_open -= extra
+
+            # Expiry check (perishables only)
             units_expired = 0
-            if sku.shelf_life_days and sku.shelf_life_days < 30:
-                # Simplified: small chance of expiry for perishables
-                if self.rng.random() < 0.05:
-                    expire_qty = self.rng.randint(1, 3)
+            if sku.shelf_life_days and sku.shelf_life_days < 14:
+                if self.rng.random() < 0.08:
+                    expire_qty = self.rng.randint(1, 4)
                     expire_qty = min(expire_qty, shelf_current)
                     units_expired = expire_qty
                     shelf_current -= expire_qty
 
             shelf_close = max(0, shelf_current)
             warehouse_close = max(0, warehouse_open)
-            stockout = 1 if shelf_close == 0 else 0
+            stockout = 1 if shelf_close == 0 and units_sold > 0 else 0
 
             entry = {
                 "ledger_id": f"STK_{sku.sku_id}_{day:+05d}",

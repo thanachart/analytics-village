@@ -10,7 +10,6 @@ async function fetchJSON(url, options = {}) {
 }
 
 export const api = {
-  // Health
   health: () => fetchJSON('/health'),
 
   // Episodes
@@ -18,29 +17,35 @@ export const api = {
   getEpisode: (id) => fetchJSON(`/episodes/${id}`),
   createEpisode: (data) => fetchJSON('/episodes', { method: 'POST', body: JSON.stringify(data) }),
   updateStatus: (id, status) => fetchJSON(`/episodes/${id}/status?status=${status}`, { method: 'PUT' }),
+  deleteEpisode: (id) => fetchJSON(`/episodes/${id}`, { method: 'DELETE' }),
+
+  // GitHub actions
+  pushEpisode: (id, msg) => fetchJSON(`/episodes/${id}/push`, { method: 'POST', body: JSON.stringify({ commit_message: msg }) }),
+  updateEpisode: (id, msg) => fetchJSON(`/episodes/${id}/update`, { method: 'POST', body: JSON.stringify({ commit_message: msg }) }),
+  lockEpisode: (id) => fetchJSON(`/episodes/${id}/lock`, { method: 'POST' }),
+  unlockEpisode: (id) => fetchJSON(`/episodes/${id}/unlock`, { method: 'POST' }),
 
   // Simulation
   runSimulation: (data) => fetchJSON('/simulation/run', { method: 'POST', body: JSON.stringify(data) }),
   getSimStatus: () => fetchJSON('/simulation/status'),
-  getKPIs: (episodeId) => fetchJSON('/simulation/kpis' + (episodeId ? `?episode_id=${episodeId}` : '')),
+  getKPIs: (epId) => fetchJSON('/simulation/kpis' + (epId ? `?episode_id=${epId}` : '')),
 
-  // Data exploration
+  // Data
   dailyRevenue: (epId, biz) => fetchJSON(`/data/daily-revenue?${epId ? `episode_id=${epId}&` : ''}business_id=${biz || 'supermarket'}`),
   customerSummary: (epId, biz) => fetchJSON(`/data/customer-summary?${epId ? `episode_id=${epId}&` : ''}business_id=${biz || 'supermarket'}`),
-  topSkus: (epId, biz, limit) => fetchJSON(`/data/top-skus?${epId ? `episode_id=${epId}&` : ''}business_id=${biz || 'supermarket'}&limit=${limit || 15}`),
+  topSkus: (epId, biz, n) => fetchJSON(`/data/top-skus?${epId ? `episode_id=${epId}&` : ''}business_id=${biz || 'supermarket'}&limit=${n || 15}`),
   lifecycleSummary: (epId, biz) => fetchJSON(`/data/lifecycle-summary?${epId ? `episode_id=${epId}&` : ''}business_id=${biz || 'supermarket'}`),
   stockoutImpact: (epId, biz) => fetchJSON(`/data/stockout-impact?${epId ? `episode_id=${epId}&` : ''}business_id=${biz || 'supermarket'}`),
   dayOfWeek: (epId, biz) => fetchJSON(`/data/day-of-week?${epId ? `episode_id=${epId}&` : ''}business_id=${biz || 'supermarket'}`),
-  tablePreview: (table, epId, limit) => fetchJSON(`/data/table-preview/${table}?${epId ? `episode_id=${epId}&` : ''}limit=${limit || 50}`),
   listTables: (epId) => fetchJSON(`/data/tables${epId ? `?episode_id=${epId}` : ''}`),
+  tablePreview: (t, epId, n) => fetchJSON(`/data/table-preview/${t}?${epId ? `episode_id=${epId}&` : ''}limit=${n || 50}`),
 
   // Submissions
-  listSubmissions: (episodeId) => fetchJSON('/submissions' + (episodeId ? `?episode_id=${episodeId}` : '')),
+  listSubmissions: (epId) => fetchJSON('/submissions' + (epId ? `?episode_id=${epId}` : '')),
   getSubmission: (id) => fetchJSON(`/submissions/${id}`),
   scoreSubmission: (id, data) => fetchJSON(`/submissions/${id}/score`, { method: 'POST', body: JSON.stringify(data) }),
-  getScoreboard: (episodeId) => fetchJSON(`/submissions/scoreboard/${episodeId}`),
+  getScoreboard: (epId) => fetchJSON(`/submissions/scoreboard/${epId}`),
 
   // Export
   exportDbUrl: (id) => `${BASE}/export/village-db/${id}`,
-  exportBriefUrl: (id) => `${BASE}/export/brief/${id}`,
 }

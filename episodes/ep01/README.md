@@ -7,8 +7,10 @@
 ## Quick Start
 
 ```python
+import sys; sys.path.insert(0, '../..')
 from student import Episode, Decision
-ep = Episode.load('ep01', data_dir='../../data/ep01')
+
+ep = Episode.load('ep01', data_dir='data')
 ep.brief()
 ep.db.tables()
 ep.owner.questions()
@@ -16,10 +18,15 @@ ep.owner.questions()
 
 ## Data
 
-- `data/ep01/village.db` — SQLite database with all simulation tables
-- `episodes/ep01/schema.json` — Submission field requirements
-- `episodes/ep01/brief.md` — Episode brief
+- `data/village.db` — SQLite database with all simulation tables
+- `brief.md` — Episode challenge brief
+- `schema.json` — Submission field requirements
 
-## Submission
+## Submit Your Analysis
 
-Export your `decision.json` to `submissions/ep01/` and open a Pull Request.
+1. Complete your analysis in the notebook
+2. Build a `Decision` object with your findings and recommendation
+3. Export to `../../submissions/ep01/YOUR_STUDENT_ID.json`
+4. Open a Pull Request to this repository
+
+See the [notebook](../../notebooks/ep01_open_for_business.ipynb) for a guided walkthrough.

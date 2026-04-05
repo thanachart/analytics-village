@@ -3,8 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { api } from '../api'
 
 const NAV_ITEMS = [
-  { to: '/', icon: '~', label: 'Dashboard' },
-  { to: '/challenges', icon: '!', label: 'Challenges' },
+  { to: '/', icon: '~', label: 'Challenges' },
   { to: '/submissions', icon: '#', label: 'Submissions' },
   { to: '/scoreboard', icon: '*', label: 'Scoreboard' },
   { to: '/settings', icon: '%', label: 'Settings' },

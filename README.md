@@ -2,77 +2,55 @@
 
 A simulated economy for teaching real analytics.
 
-One instructor runs a village economy simulation. The simulation generates realistic datasets across multiple businesses. Challenges are packaged as episodes and released to students. Students analyse data, consult a simulated business owner, and submit structured decisions.
+Each **episode** is a standalone data analytics challenge built on a shared village economy simulation. Explore the data, consult the simulated business owner, and submit your structured recommendation.
 
 ## Episodes
 
-| EP | Title | Business | Tier | Status |
-|----|-------|----------|------|--------|
-| 01 | Open for Business | Village Fresh Supermarket | 1 — Reporting | Active |
+| EP | Title | Business | Tier |
+|----|-------|----------|------|
+| [EP01](episodes/ep01/) | Open for Business | Village Fresh Supermarket | 1 — Reporting |
 
-## For Students
-
-### Quick Start (Google Colab or Local)
+## Quick Start
 
 ```python
 import sys; sys.path.insert(0, '.')
 from student import Episode, Decision
 
-ep = Episode.load('ep01', data_dir='data/ep01')
+ep = Episode.load('ep01', data_dir='episodes/ep01/data')
 ep.brief()                     # Read the challenge
-ep.owner.questions()           # See what you can ask the owner
-ep.db.tables()                 # Explore the database
+ep.db.tables()                 # See available data tables
+ep.owner.questions()           # Ask the business owner questions
 ```
 
-### Notebooks
+## Notebooks
 
-Open `notebooks/ep01_open_for_business.ipynb` to get started with a guided template.
+Open the guided notebook for your episode:
+- [EP01 — Open for Business](notebooks/ep01_open_for_business.ipynb)
 
-### Submit
+## How to Submit
 
-1. Build your decision using the `Decision` class
-2. Export to `submissions/ep01/YOUR_ID.json`
-3. Open a Pull Request
+1. Build your decision using the `Decision` class in the notebook
+2. Export to `submissions/ep01/YOUR_STUDENT_ID.json`
+3. Open a **Pull Request** to this repository
+4. Your submission will be validated automatically
 
-## For Instructors
+## Episode Structure
 
-### Generate a New Episode
-
-```bash
-python -m simulation.generate --households 150 --days 90 --no-llm --output data/ep01 --episode-id ep01
+Each episode folder contains:
+```
+episodes/ep01/
+  data/              — SQLite database with simulation data
+    village.db       — Main database (use with ep.db.query())
+  brief.md           — Challenge brief
+  schema.json        — Submission field requirements
+  README.md          — Episode-specific instructions
 ```
 
-### Run the Facilitator App
+## Student Package
 
-```bash
-python -m uvicorn server.main:app --port 8000
-# Open http://localhost:8000
-```
+The `student/` directory contains the Python package you'll use:
+- `Episode` — Load and explore episode data
+- `Decision` — Build, validate, and export your submission
+- `Owner` — Consult the simulated business owner
 
-### With LLM (Ollama)
-
-```bash
-# Start Ollama first: ollama serve
-# Pull model: ollama pull gemma4:e2b
-python -m simulation.generate --households 150 --days 90 --live-days 30 --episode-id ep01 --output data/ep01
-```
-
-## Architecture
-
-```
-analytics-village/
-  simulation/    — Simulation engine (generates village.db)
-  student/       — Student Python package (Episode, Decision)
-  server/        — FastAPI facilitator backend
-  frontend/      — React SPA facilitator UI
-  data/          — Generated episode databases
-  episodes/      — Episode briefs and schemas
-  submissions/   — Student submission JSONs (via PR)
-  notebooks/     — Guided analysis notebooks
-```
-
-## Tech Stack
-
-- **Simulation:** Python, SQLite, Ollama (gemma4:e2b)
-- **Student Package:** pandas, sqlite3, tabulate
-- **Facilitator:** FastAPI + React (Vite) with masonry card UI
+No API keys or LLM required. Everything runs locally.
