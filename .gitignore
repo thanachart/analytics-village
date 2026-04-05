@@ -1,3 +1,14 @@
+# Instructor-only (not in public repo)
+simulation/
+server/
+frontend/
+.claude/
+data/
+tests/
+output/
+output_test/
+pyproject.toml
+
 # Python
 __pycache__/
 *.py[cod]
@@ -5,22 +16,15 @@ __pycache__/
 build/
 *.egg
 .venv/
-venv/
-
-# Node
-frontend/node_modules/
 
 # SQLite temp
 *.db-shm
 *.db-wal
 *.db-journal
 
-# Facilitator (instructor-only, not pushed to public repo)
+# Local state
 facilitator.db
-output/
-output_test/
 test_village.db
-data/
 
 # IDE
 .vscode/
@@ -30,3 +34,6 @@ data/
 # OS
 .DS_Store
 Thumbs.db
+
+# Node
+node_modules/
