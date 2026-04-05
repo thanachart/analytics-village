@@ -19,7 +19,7 @@ def find_challenge_files(challenge_id: str, data_dir: str | None = None) -> dict
     # Also check common relative paths
     search_dirs.append(os.path.join("challenges", challenge_id, "data"))
     search_dirs.append(os.path.join("challenges", challenge_id))
-    search_dirs.append(os.path.join("episodes", challenge_id, "data"))
+    search_dirs.append(os.path.join("challenges", challenge_id, "data"))
     search_dirs.append(os.path.join("data", challenge_id))
 
     files = {}

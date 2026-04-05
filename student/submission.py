@@ -17,12 +17,12 @@ class Decision:
 
     def __init__(
         self,
-        episode_id: str,
+        challenge_id: str,
         student_ids: list[str],
         *,
         team_id: str = None,
     ):
-        self.episode_id = episode_id
+        self.challenge_id = challenge_id
         self.student_ids = student_ids
         self.team_id = team_id
 
@@ -116,8 +116,8 @@ class Decision:
 
         # Required fields
         checks.append((
-            bool(self.episode_id),
-            f"Episode ID: {self.episode_id}" if self.episode_id else "Episode ID: MISSING"
+            bool(self.challenge_id),
+            f"Challenge ID: {self.challenge_id}" if self.challenge_id else "Challenge ID: MISSING"
         ))
         checks.append((
             bool(self.student_ids),
@@ -180,7 +180,7 @@ class Decision:
     def preview(self) -> None:
         """Display formatted preview of the decision."""
         print(f"\n{'=' * 60}")
-        print(f"DECISION PREVIEW: {self.episode_id}")
+        print(f"DECISION PREVIEW: {self.challenge_id}")
         print(f"{'=' * 60}")
         print(f"Students: {', '.join(self.student_ids)}")
         if self.team_id:
@@ -205,7 +205,7 @@ class Decision:
         data = {
             "metadata": {
                 "analytics_village_version": "1.0.0",
-                "episode_id": self.episode_id,
+                "challenge_id": self.challenge_id,
                 "submitted_at": datetime.now(timezone.utc).isoformat(),
                 "student_ids": self.student_ids,
                 "team_id": self.team_id,
@@ -238,7 +238,7 @@ class Decision:
 
         if not filename:
             sid = self.student_ids[0] if self.student_ids else "unknown"
-            filename = f"{self.episode_id}_{sid}.json"
+            filename = f"{self.challenge_id}_{sid}.json"
 
         path = os.path.join(output_dir, filename)
         with open(path, "w", encoding="utf-8") as f:
