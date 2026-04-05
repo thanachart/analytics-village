@@ -1,30 +1,38 @@
 # CH01 - Analytics Challenge
 
-## Your client: Khun Somchai, Village Fresh Supermarket
+## Your Client
 
-Khun Somchai has been running Village Fresh for 8 years. He needs your help understanding his business performance and making data-driven decisions.
+You've been hired as a data analyst consultant for a small business in a Thai village.
+
+## The Situation
+
+The business owner has 90 days of historical data and needs your help understanding their business performance and making data-driven decisions.
 
 ## Your Task
 
 1. **Explore the data** - Use SQL and Python to understand the business
 2. **Consult the owner** - Ask questions to understand context beyond the numbers
-3. **Analyse patterns** - Find insights the owner might not see
+3. **Analyse patterns** - Find insights that the owner might not see
 4. **Make a recommendation** - Propose a specific, actionable plan
 
 ## Data Available
 
-SQLite database with transaction records, customer data, inventory logs, and more. Use `ch.db.tables()` to see what's available.
+You have access to a SQLite database with transaction records, customer data, inventory logs, and more. Use `ep.db.tables()` to see what's available.
 
 ## Budget
 
-Up to **10,000 THB** for any recommended actions.
+You have up to **10,000 THB** for any recommended actions.
+
+## Deadline
+
+Submit your `decision.json` before the deadline shown in `ep.status()`.
 
 ## Getting Started
 
 ```python
-from student import Challenge, Decision
-ch = Challenge.load('ch01', data_dir='challenges/ch01/data')
-ch.brief()
-ch.db.tables()
-ch.owner.questions()
+from analytics_village import Episode, Decision
+ep = Episode.load("ch01")
+ep.brief()
+ep.owner.questions()
+ep.db.tables()
 ```

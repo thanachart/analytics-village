@@ -1,6 +1,6 @@
 {
-  "challenge_id": "ch01",
-  "challenge_number": 1,
+  "episode_id": "ch01",
+  "episode_number": 1,
   "action_types": [
     "reorder_policy",
     "winback",
