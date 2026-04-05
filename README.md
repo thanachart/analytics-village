@@ -65,17 +65,29 @@ submissions/            Submit your JSON here via PR
 
 ## What's in the Data?
 
-Each challenge database contains realistic simulated data including:
+Each challenge database (`village.db`) contains:
 
-- **transactions** — Every purchase (customer, items, value, satisfaction)
-- **basket_items** — Line items per transaction (stockouts, substitutions)
-- **households** — Customer profiles (income, size, persona weights)
-- **stock_ledger** — Daily inventory levels per product
-- **lifecycle_events** — Customer state transitions (retained, at-risk, churned)
+**Reference tables:**
+- **households** — Customer profiles (size, income bracket, zone, dwelling type)
+- **businesses** — Store names, types, locations
+- **skus** — Product catalogue (name, category, price)
+- **calendar_events** — Holidays, payday, weather with real dates
+
+**Transaction tables:**
+- **transactions** — Every purchase with date, value, satisfaction score
+- **basket_items** — Line items per transaction (quantities, stockouts, substitutions)
+
+**Operations:**
+- **stock_ledger** — Daily inventory levels per SKU
 - **store_metrics** — Daily KPIs (revenue, visitors, stockouts, waste)
-- **skus** — Product catalogue with Thai pricing
+- **waste_events** — Expired and damaged stock
 
-Use `ch.db.tables()` to see all available tables and `ch.db.query("SELECT ...")` to explore.
+**Customer:**
+- **lifecycle_events** — State transitions (retained, at-risk, churned)
+- **resident_days** — Daily household activity log
+- **alt_transactions** — Purchases at competitor stores
+
+Use `ch.db.tables()` to see all tables and `ch.db.query("SELECT ...")` to explore.
 
 ---
 
