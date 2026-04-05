@@ -29,6 +29,9 @@ export const api = {
   runSimulation: (data) => fetchJSON('/simulation/run', { method: 'POST', body: JSON.stringify(data) }),
   getSimStatus: () => fetchJSON('/simulation/status'),
   getKPIs: (epId) => fetchJSON('/simulation/kpis' + (epId ? `?episode_id=${epId}` : '')),
+  validateData: (id) => fetchJSON(`/simulation/validate/${id}`),
+  getFindings: (id) => fetchJSON(`/simulation/findings/${id}`),
+  generateFindings: (id, seed) => fetchJSON(`/simulation/findings/${id}/generate${seed ? `?seed_findings=${encodeURIComponent(seed)}` : ''}`, { method: 'POST' }),
 
   // Data
   dailyRevenue: (epId, biz) => fetchJSON(`/data/daily-revenue?${epId ? `episode_id=${epId}&` : ''}business_id=${biz || 'supermarket'}`),
