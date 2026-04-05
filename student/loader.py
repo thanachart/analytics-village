@@ -1,38 +1,33 @@
 """
-Analytics Village — Episode data loader.
-Downloads from GitHub release or loads from local path.
+Analytics Village — Challenge data loader.
 """
 from __future__ import annotations
 
-import json
 import os
-import shutil
 from pathlib import Path
-
 
 DEFAULT_CACHE_DIR = os.path.join(str(Path.home()), ".analytics_village", "cache")
 
 
-def find_episode_files(
-    episode_id: str,
-    data_dir: str | None = None,
-) -> dict[str, str]:
-    """
-    Find episode files locally. Returns dict of {file_type: path}.
-    Searches in order: data_dir, current directory, cache directory.
-    """
+def find_challenge_files(challenge_id: str, data_dir: str | None = None) -> dict[str, str]:
+    """Find challenge files locally. Returns {file_type: path}."""
     search_dirs = []
     if data_dir:
         search_dirs.append(data_dir)
     search_dirs.append(os.getcwd())
-    search_dirs.append(os.path.join(DEFAULT_CACHE_DIR, episode_id))
+    search_dirs.append(os.path.join(DEFAULT_CACHE_DIR, challenge_id))
+    # Also check common relative paths
+    search_dirs.append(os.path.join("challenges", challenge_id, "data"))
+    search_dirs.append(os.path.join("challenges", challenge_id))
+    search_dirs.append(os.path.join("episodes", challenge_id, "data"))
+    search_dirs.append(os.path.join("data", challenge_id))
 
     files = {}
     needed = {
-        "db": [f"{episode_id}_village.db", "village.db", f"{episode_id}.db"],
-        "qa": ["qa.json", f"{episode_id}_qa.json"],
-        "brief": ["brief.md", f"{episode_id}_brief.md"],
-        "schema": ["schema.json", f"{episode_id}_schema.json"],
+        "db": ["village.db", f"{challenge_id}_village.db", f"{challenge_id}.db"],
+        "qa": ["qa.json", f"{challenge_id}_qa.json"],
+        "brief": ["brief.md", f"{challenge_id}_brief.md"],
+        "schema": ["schema.json", f"{challenge_id}_schema.json"],
     }
 
     for file_type, candidates in needed.items():
@@ -48,29 +43,24 @@ def find_episode_files(
     return files
 
 
-def download_episode(
-    episode_id: str,
-    github_repo: str = "analytics-village",
+def download_challenge(
+    challenge_id: str,
+    github_repo: str = "thanachart/analytics-village",
     cache_dir: str | None = None,
     force: bool = False,
 ) -> dict[str, str]:
-    """
-    Download episode files from GitHub release.
-    Returns dict of {file_type: path}.
-    """
-    cache = cache_dir or os.path.join(DEFAULT_CACHE_DIR, episode_id)
+    """Download challenge files from GitHub release."""
+    cache = cache_dir or os.path.join(DEFAULT_CACHE_DIR, challenge_id)
     os.makedirs(cache, exist_ok=True)
 
-    # Check cache first
     if not force:
-        files = find_episode_files(episode_id, data_dir=cache)
+        files = find_challenge_files(challenge_id, data_dir=cache)
         if "db" in files:
             return files
 
-    # Try downloading from GitHub
     try:
         import requests
-        tag = f"episode-{episode_id}"
+        tag = f"challenge-{challenge_id}"
         api_url = f"https://api.github.com/repos/{github_repo}/releases/tags/{tag}"
         resp = requests.get(api_url, timeout=10)
         if resp.status_code == 200:
@@ -85,8 +75,8 @@ def download_episode(
                     with open(local_path, "wb") as f:
                         f.write(r.content)
         else:
-            print(f"  Note: GitHub release not found for {tag}. Using local files.")
+            print(f"  Note: Release not found for {tag}. Using local files.")
     except Exception as e:
-        print(f"  Note: Could not download from GitHub: {e}. Using local files.")
+        print(f"  Note: Could not download: {e}. Using local files.")
 
-    return find_episode_files(episode_id, data_dir=cache)
+    return find_challenge_files(challenge_id, data_dir=cache)

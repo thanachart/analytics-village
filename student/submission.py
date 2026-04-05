@@ -13,7 +13,7 @@ from .display import format_validation
 
 
 class Decision:
-    """Structured decision submission for an episode."""
+    """Structured decision submission for a challenge."""
 
     def __init__(
         self,

@@ -1,6 +1,6 @@
 """
 Analytics Village — DatabaseProxy for student access.
-Provides convenient filtered queries over the episode SQLite database.
+Provides convenient filtered queries over the challenge SQLite database.
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from .display import format_table
 class DatabaseProxy:
     """
     Student-facing database access.
-    Default queries are filtered to the episode's primary business and day range.
+    Default queries are filtered to the challenge's primary business and day range.
     """
 
     def __init__(
@@ -36,7 +36,7 @@ class DatabaseProxy:
     # ── Core query methods ───────────────────────────────────
 
     def query(self, sql: str, params: tuple = ()) -> pd.DataFrame:
-        """Execute SQL and return DataFrame. Auto-filtered for episode context."""
+        """Execute SQL and return DataFrame. Auto-filtered for challenge context."""
         self._query_log.append(sql)
         return pd.read_sql_query(sql, self._conn, params=params)
 

@@ -1,5 +1,5 @@
 """
-Analytics Village — Episode class (main student entry point).
+Analytics Village — Challenge class (main student entry point).
 """
 from __future__ import annotations
 
@@ -7,26 +7,32 @@ import os
 
 from .db import DatabaseProxy
 from .owner import Owner
-from .loader import find_episode_files, download_episode
+from .loader import find_challenge_files, download_challenge
 from .display import format_brief
 
 
-class Episode:
+class Challenge:
     """
     Main entry point for student interaction.
     Load once per session. Provides access to DB, owner, and submission tools.
+
+    Usage:
+        ch = Challenge.load("ch01")
+        ch.brief()
+        ch.db.tables()
+        ch.owner.questions()
     """
 
     def __init__(
         self,
-        episode_id: str,
+        challenge_id: str,
         db_path: str,
         qa_path: str | None = None,
         brief_path: str | None = None,
         schema_path: str | None = None,
         primary_business: str = "supermarket",
     ):
-        self._episode_id = episode_id
+        self._challenge_id = challenge_id
         self._db_path = db_path
         self._qa_path = qa_path
         self._brief_path = brief_path
@@ -39,37 +45,36 @@ class Episode:
     @classmethod
     def load(
         cls,
-        episode_id: str,
+        challenge_id: str,
         *,
         data_dir: str = None,
-        github_repo: str = "analytics-village",
+        github_repo: str = "thanachart/analytics-village",
         force_download: bool = False,
         primary_business: str = "supermarket",
-    ) -> Episode:
+    ) -> Challenge:
         """
-        Load an episode by ID. Downloads from GitHub if not cached locally.
+        Load a challenge by ID.
 
         Examples:
-            ep = Episode.load("ep01")
-            ep = Episode.load("ep03", primary_business="pharmacy")
+            ch = Challenge.load("ch01")
+            ch = Challenge.load("ch01", data_dir="challenges/ch01/data")
         """
-        # Find or download files
         if force_download:
-            files = download_episode(episode_id, github_repo, data_dir, force=True)
+            files = download_challenge(challenge_id, github_repo, data_dir, force=True)
         else:
-            files = find_episode_files(episode_id, data_dir)
+            files = find_challenge_files(challenge_id, data_dir)
             if "db" not in files:
-                files = download_episode(episode_id, github_repo, data_dir)
+                files = download_challenge(challenge_id, github_repo, data_dir)
 
         if "db" not in files:
             raise FileNotFoundError(
-                f"Could not find database for episode '{episode_id}'.\n"
+                f"Could not find database for challenge '{challenge_id}'.\n"
                 f"Searched in: {data_dir or 'current directory and cache'}\n"
-                f"Try: Episode.load('{episode_id}', data_dir='/path/to/files')"
+                f"Try: Challenge.load('{challenge_id}', data_dir='challenges/{challenge_id}/data')"
             )
 
-        ep = cls(
-            episode_id=episode_id,
+        ch = cls(
+            challenge_id=challenge_id,
             db_path=files["db"],
             qa_path=files.get("qa"),
             brief_path=files.get("brief"),
@@ -79,25 +84,24 @@ class Episode:
 
         # Print summary
         db_size = os.path.getsize(files["db"]) / (1024 * 1024)
-        sku_count = len(ep.db.query("SELECT sku_id FROM skus"))
-        hh_count = len(ep.db.query("SELECT household_id FROM households"))
-        day_range = ep.db.query("SELECT MIN(day) AS mn, MAX(day) AS mx FROM transactions")
+        sku_count = len(ch.db.query("SELECT sku_id FROM skus"))
+        hh_count = len(ch.db.query("SELECT household_id FROM households"))
+        day_range = ch.db.query("SELECT MIN(day) AS mn, MAX(day) AS mx FROM transactions")
         days = "?"
         if len(day_range) > 0:
             mn, mx = day_range.iloc[0]["mn"], day_range.iloc[0]["mx"]
             days = f"{mn} to {mx}" if mn is not None else "?"
 
-        print(f"+ Found episode: {episode_id.upper()}")
+        print(f"+ Loaded challenge: {challenge_id.upper()}")
         print(f"+ Database: {db_size:.1f} MB | {sku_count} SKUs | {hh_count} households | days {days}")
-        if ep._owner:
-            total_q = len(ep._owner._qa)
-            print(f"+ Owner: {ep._owner._owner_name} | {total_q} questions available")
-        print(f"Ready. Start with: ep.brief()  or  ep.db.tables()")
+        if ch._owner:
+            print(f"+ Owner: {ch._owner._owner_name} | {len(ch._owner._qa)} questions available")
+        print(f"Ready. Start with: ch.brief()  or  ch.db.tables()")
 
-        return ep
+        return ch
 
     def brief(self) -> None:
-        """Display the episode brief."""
+        """Display the challenge brief."""
         if self._brief_path and os.path.exists(self._brief_path):
             with open(self._brief_path, encoding="utf-8") as f:
                 text = f.read()
@@ -105,34 +109,31 @@ class Episode:
             if result:
                 print(result)
         else:
-            print(f"No brief available for {self._episode_id}.")
-            print("Start exploring with: ep.db.tables()")
+            print(f"No brief available for {self._challenge_id}.")
+            print("Start exploring with: ch.db.tables()")
 
     @property
     def db(self) -> DatabaseProxy:
-        """Access to the episode database."""
+        """Access to the challenge database."""
         return self._db
 
     @property
     def owner(self) -> Owner:
         """Access to the simulated business owner."""
         if not self._owner:
-            raise ValueError("No Q&A data available for this episode.")
+            raise ValueError("No Q&A data available for this challenge.")
         return self._owner
 
     @property
     def db_path(self) -> str:
-        """Absolute path to the local SQLite file."""
         return os.path.abspath(self._db_path)
 
     @property
     def qa_path(self) -> str | None:
-        """Absolute path to the raw qa.json file."""
         return os.path.abspath(self._qa_path) if self._qa_path else None
 
     @property
     def schema(self) -> dict | None:
-        """Submission schema for this episode."""
         if self._schema_path and os.path.exists(self._schema_path):
             import json
             with open(self._schema_path) as f:
@@ -140,8 +141,8 @@ class Episode:
         return None
 
     def status(self) -> None:
-        """Display current episode status."""
-        print(f"\nEpisode: {self._episode_id.upper()}")
+        """Display current challenge status."""
+        print(f"\nChallenge: {self._challenge_id.upper()}")
         print(f"Business: {self._primary_business}")
         if self._owner:
             asked = len(self._owner.questions_asked)
