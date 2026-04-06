@@ -24,15 +24,13 @@ Each challenge comes with **two SQLite databases** containing the same data in d
 | `customers` | Customer profiles (size, income, zone) |
 | `products` | Product catalogue (name, category, price) |
 | `stores` | Store names, types, locations |
+| `suppliers` | Supplier names and reliability |
 | `calendar` | Full date table with day-of-week, payday, events |
-| `transactions` | Every purchase (customer, store, date, amount) |
-| `transaction_items` | Line items per transaction (product, qty, stockouts) |
-| `inventory` | Daily stock levels per product |
-| `customer_lifecycle` | State transitions (retained, at-risk, churned) |
-| `customer_daily_activity` | Daily visit/absence log |
-| `competitor_visits` | Purchases at competitor stores |
-| `store_daily_metrics` | Daily KPIs (revenue, customers, stockouts) |
-| `waste_log` | Expired/damaged stock |
+| `transactions` | Every purchase (customer, store, date, amount, satisfaction) |
+| `transaction_items` | Line items per transaction (product, qty, stockouts, substitutions) |
+| `inventory` | Daily stock levels per product (opening, sold, received, closing) |
+| `store_daily_metrics` | Daily KPIs (revenue, customers, stockouts, waste) |
+| `waste_log` | Expired/damaged stock with cost |
 
 ### `village_star.db` — Star Schema (focus on analysis)
 | Table | Description |
@@ -41,11 +39,11 @@ Each challenge comes with **two SQLite databases** containing the same data in d
 | `dim_product` | Product dimension |
 | `dim_store` | Store dimension |
 | `dim_date` | Date dimension (day-of-week, month, payday, events) |
-| `fact_sales` | One row per item sold (denormalized with all keys) |
+| `fact_sales` | One row per item sold (all keys + satisfaction + stockout flags) |
 | `fact_daily_store` | Daily store KPIs |
 | `fact_inventory` | Daily stock snapshots |
-| `fact_customer_lifecycle` | Lifecycle state transitions |
-| `fact_competitor_visits` | Competitor store visits |
+
+Students derive lifecycle, churn, and competitor behavior from transaction patterns — see the [Analytics Workbook](notebooks/ch01_analytics.ipynb).
 
 ---
 
