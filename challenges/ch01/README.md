@@ -1,34 +1,21 @@
 # CH01 — Open for Business
 
-**Business:** Village Fresh Supermarket (Khun Somchai)
-**Tier:** 1 — Reporting
-**Period:** Aug 15 – Nov 12, 2024 (90 days)
+**Village Fresh Supermarket** | Tier 1 | Aug–Nov 2024
 
-## Two Database Options
+## Notebooks
 
 | Notebook | Database | Focus |
 |----------|----------|-------|
-| [ch01_normalized.ipynb](../../notebooks/ch01_normalized.ipynb) | `village_normalized.db` | Practice SQL joins & data prep |
-| [ch01_star.ipynb](../../notebooks/ch01_star.ipynb) | `village_star.db` | Focus on analysis with flat tables |
+| [ch01_normalized.ipynb](ch01_normalized.ipynb) | `village_normalized.db` | SQL joins & data prep |
+| [ch01_star.ipynb](ch01_star.ipynb) | `village_star.db` | Analysis with flat tables |
+| [ch01_analytics.ipynb](ch01_analytics.ipynb) | Either | Build cohort, churn, basket analysis |
 
-## Files
+## Student Tables (4 only)
 
-- `data/village_normalized.db` — ERP/CRM style (customers, products, transactions, transaction_items, inventory...)
-- `data/village_star.db` — Star schema (dim_customer, dim_product, fact_sales, fact_daily_store...)
-- `brief.md` — Challenge description and context
-- `questions.json` — 10 guided analysis questions
-- `schema.json` — Submission field requirements
+**`products`** — product_id, product_name, product_name_th, category, subcategory, unit_description
 
-## Quick Start
+**`calendar`** — date, day_number, day_of_week, day_of_month, month, year, is_weekend, is_payday_week, event_name, event_type
 
-```python
-from student import Challenge, Decision
-ch = Challenge.load('ch01', data_dir='data', db_name='village_normalized.db')
-ch.brief()
-ch.questions()
-ch.db.tables()
-```
+**`transactions`** — transaction_id, transaction_date, customer_id, product_id, quantity_sold, unit_price_thb
 
-## Submit
-
-Export to `../../submissions/ch01/YOUR_ID.json` and open a Pull Request.
+**`inventory`** — record_date, product_id, opening_stock, units_sold, units_received, closing_stock

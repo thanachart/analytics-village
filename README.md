@@ -2,104 +2,51 @@
 
 A simulated village economy for learning real-world data analytics.
 
-Each **challenge** provides two database formats — choose the one that fits your learning goal.
-
----
-
 ## Challenges
 
-| ID | Title | Business | Tier | Type |
-|----|-------|----------|------|------|
-| [CH01](challenges/ch01/) | Open for Business | Village Fresh Supermarket | 1 | Reporting |
-
----
-
-## Two Database Formats
-
-Each challenge comes with **two SQLite databases** containing the same data in different structures:
-
-### `village_normalized.db` — ERP/CRM Style (practice joins & data prep)
-| Table | Description |
-|-------|-------------|
-| `customers` | Customer profiles (size, income, zone) |
-| `products` | Product catalogue (name, category, price) |
-| `stores` | Store names, types, locations |
-| `suppliers` | Supplier names and reliability |
-| `calendar` | Full date table with day-of-week, payday, events |
-| `transactions` | Every purchase (customer, store, date, amount, satisfaction) |
-| `transaction_items` | Line items per transaction (product, qty, stockouts, substitutions) |
-| `inventory` | Daily stock levels per product (opening, sold, received, closing) |
-| `store_daily_metrics` | Daily KPIs (revenue, customers, stockouts, waste) |
-| `waste_log` | Expired/damaged stock with cost |
-
-### `village_star.db` — Star Schema (focus on analysis)
-| Table | Description |
-|-------|-------------|
-| `dim_customer` | Customer dimension |
-| `dim_product` | Product dimension |
-| `dim_store` | Store dimension |
-| `dim_date` | Date dimension (day-of-week, month, payday, events) |
-| `fact_sales` | One row per item sold (all keys + satisfaction + stockout flags) |
-| `fact_daily_store` | Daily store KPIs |
-| `fact_inventory` | Daily stock snapshots |
-
-Students derive lifecycle, churn, and competitor behavior from transaction patterns — see the [Analytics Workbook](notebooks/ch01_analytics.ipynb).
-
----
+| ID | Title | Business |
+|----|-------|----------|
+| [CH01](challenges/ch01/) | Open for Business | Village Fresh Supermarket |
 
 ## Quick Start
 
-**Pick a notebook:**
-- [CH01 Normalized](notebooks/ch01_normalized.ipynb) — practice SQL joins & data prep
-- [CH01 Star Schema](notebooks/ch01_star.ipynb) — focus on analysis with flat tables
-- [CH01 Analytics Workbook](notebooks/ch01_analytics.ipynb) — learn to build cohort, churn, basket, segmentation tables
+Open a notebook from the challenge folder:
 
-Or run locally:
-```python
-from student import Challenge, Decision
+- [CH01 Normalized](challenges/ch01/ch01_normalized.ipynb) — practice SQL joins
+- [CH01 Star Schema](challenges/ch01/ch01_star.ipynb) — analysis with flat tables
+- [CH01 Analytics](challenges/ch01/ch01_analytics.ipynb) — build cohort, churn, segmentation
 
-# Option A: Normalized (practice joins)
-ch = Challenge.load('ch01', data_dir='challenges/ch01/data', db_name='village_normalized.db')
+## Student Tables
 
-# Option B: Star schema (focus on analysis)
-ch = Challenge.load('ch01', data_dir='challenges/ch01/data', db_name='village_star.db')
+Each challenge has **4 tables**:
 
-ch.brief()         # Challenge description
-ch.questions()     # 10 guided questions
-ch.db.tables()     # See database tables
-```
+| Table | Columns |
+|-------|---------|
+| `products` | product_id, product_name, product_name_th, category, subcategory, unit_description |
+| `calendar` | date, day_number, day_of_week, day_of_month, month, year, is_weekend, is_payday_week, event_name, event_type |
+| `transactions` | transaction_id, transaction_date, customer_id, product_id, quantity_sold, unit_price_thb |
+| `inventory` | record_date, product_id, opening_stock, units_sold, units_received, closing_stock |
 
----
+## Two Database Formats
 
-## How to Submit
+- **`village_normalized.db`** — 4 separate tables, practice SQL joins
+- **`village_star.db`** — `dim_product`, `dim_date`, `fact_sales`, `fact_inventory` (pre-joined)
 
-1. Complete your analysis in the notebook
-2. Save your notebook as `YOUR_STUDENT_ID.ipynb`
-3. Upload to [submissions/ch01/](https://github.com/thanachart/analytics-village/tree/main/submissions/ch01)
-4. Open a **Pull Request**
-
----
-
-## Challenge Structure
+## Structure
 
 ```
 challenges/ch01/
     data/
-        village_normalized.db   ERP/CRM style (practice joins)
-        village_star.db         Star schema (focus on analysis)
-    brief.md                    Challenge description and context
-    questions.json              10 guided analysis questions
-    schema.json                 Submission requirements
+        village_normalized.db
+        village_star.db
+    brief.md
+    questions.json
+    ch01_normalized.ipynb
+    ch01_star.ipynb
+    ch01_analytics.ipynb
 
-notebooks/
-    ch01_normalized.ipynb       Notebook for normalized DB
-    ch01_star.ipynb             Notebook for star schema DB
-
-student/                        Python utilities (Challenge, Decision)
-submissions/ch01/               Submit your JSON here via PR
+student/                Python utilities (Challenge class)
 ```
-
----
 
 ## Requirements
 
@@ -107,5 +54,3 @@ submissions/ch01/               Submit your JSON here via PR
 pandas
 tabulate
 ```
-
-No API keys needed. No LLM required. Everything runs locally.
