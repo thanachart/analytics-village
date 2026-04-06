@@ -57,7 +57,7 @@
       "category": "Customers",
       "difficulty": "advanced",
       "question": "Which customers are at risk of churning? What signals predict churn?",
-      "hint": "Check customer_lifecycle for at_risk/churned transitions. What do these customers have in common?"
+      "hint": "Find customers with long gaps since last transaction. What do absent customers have in common (income, satisfaction, stockouts)?"
     },
     {
       "id": "Q9",

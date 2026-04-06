@@ -73,11 +73,10 @@ ch.db.tables()     # See database tables
 
 ## How to Submit
 
-1. Complete your analysis in the [notebook](notebooks/ch01_open_for_business.ipynb)
-2. Build a `Decision` with your findings
-3. Validate: `d.validate()`
-4. Export: `d.export(output_dir='submissions/ch01')`
-5. Open a **Pull Request**
+1. Complete your analysis in the notebook
+2. Save your notebook as `YOUR_STUDENT_ID.ipynb`
+3. Upload to [submissions/ch01/](https://github.com/thanachart/analytics-village/tree/main/submissions/ch01)
+4. Open a **Pull Request**
 
 ---
 

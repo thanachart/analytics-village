@@ -1,13 +1,9 @@
 # Submissions
 
-Submit your `decision.json` files here via Pull Request.
+Upload your completed notebook (`.ipynb`) here via Pull Request.
 
 ## How to submit
 
-1. Fork this repository
-2. Create your decision file: `submissions/ch01/YOUR_STUDENT_ID.json`
+1. Save your notebook as `YOUR_STUDENT_ID.ipynb`
+2. Upload to the challenge folder (e.g. `submissions/ch01/`)
 3. Open a Pull Request to this repository
-
-## File format
-
-Each submission must be a valid JSON file following the schema in `challenges/ch01/schema.json`.

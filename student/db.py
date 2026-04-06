@@ -4,6 +4,7 @@ Provides convenient filtered queries over the challenge SQLite database.
 """
 from __future__ import annotations
 
+import os
 import sqlite3
 from typing import Any
 
@@ -25,8 +26,10 @@ class DatabaseProxy:
         day_min: int | None = None,
         day_max: int | None = None,
     ):
-        self._path = db_path
-        self._conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        from pathlib import Path
+        self._path = os.path.abspath(db_path)
+        uri = Path(self._path).as_uri() + "?mode=ro"
+        self._conn = sqlite3.connect(uri, uri=True)
         self._conn.row_factory = sqlite3.Row
         self._primary_business = primary_business
         self._day_min = day_min
@@ -52,18 +55,29 @@ class DatabaseProxy:
     # ── Table info ───────────────────────────────────────────
 
     def tables(self) -> None:
-        """Print list of tables in scope (excludes hidden _ prefix tables)."""
-        rows = pd.read_sql_query(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '_%' "
-            "ORDER BY name", self._conn
-        )
-        print(f"\n{'='*60}\nAvailable Tables\n{'='*60}")
-        for _, row in rows.iterrows():
-            name = row["name"]
-            count = pd.read_sql_query(f"SELECT COUNT(*) AS n FROM [{name}]", self._conn)
-            n = count.iloc[0]["n"]
-            print(f"  {name:30s} {n:>8,d} rows")
-        print(f"\nUse ep.db.query('SELECT * FROM table_name LIMIT 5') to explore.")
+        """Print all tables with row counts."""
+        # Get all tables (use raw cursor to avoid pandas issues with sqlite_master)
+        cur = self._conn.execute("SELECT name, type FROM sqlite_master ORDER BY name")
+        all_rows = cur.fetchall()
+
+        tables = []
+        for row in all_rows:
+            name, typ = row["name"], row["type"]
+            if typ not in ("table", "view"):
+                continue
+            if name.startswith("_") or name.startswith("sqlite_"):
+                continue
+            try:
+                n = self._conn.execute(f'SELECT COUNT(*) FROM [{name}]').fetchone()[0]
+            except Exception:
+                n = 0
+            tables.append((name, n, typ))
+
+        print(f"\n{'='*60}\nAvailable Tables ({len(tables)})\n{'='*60}")
+        for name, n, typ in tables:
+            tag = " (view)" if typ == "view" else ""
+            print(f"  {name:30s} {n:>8,d} rows{tag}")
+        print(f"\nUse ch.db.query('SELECT * FROM table_name LIMIT 5') to explore.")
 
     def all_tables(self) -> None:
         """Print ALL tables including hidden ones."""

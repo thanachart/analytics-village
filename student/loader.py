@@ -1,6 +1,4 @@
-"""
-Analytics Village — Challenge data loader.
-"""
+"""Analytics Village — Challenge data loader."""
 from __future__ import annotations
 
 import os
@@ -14,21 +12,24 @@ def find_challenge_files(challenge_id: str, data_dir: str | None = None) -> dict
     search_dirs = []
     if data_dir:
         search_dirs.append(data_dir)
+        # Also check parent dir (brief.md is in challenges/ch01/, DB is in challenges/ch01/data/)
+        parent = os.path.dirname(os.path.abspath(data_dir))
+        search_dirs.append(parent)
+        # And grandparent for repo-level files
+        search_dirs.append(os.path.dirname(parent))
     search_dirs.append(os.getcwd())
     search_dirs.append(os.path.join(DEFAULT_CACHE_DIR, challenge_id))
-    # Also check common relative paths
     search_dirs.append(os.path.join("challenges", challenge_id, "data"))
     search_dirs.append(os.path.join("challenges", challenge_id))
-    search_dirs.append(os.path.join("challenges", challenge_id, "data"))
     search_dirs.append(os.path.join("data", challenge_id))
 
     files = {}
     needed = {
-        "db": ["village_normalized.db", "village_star.db", "village.db", f"{challenge_id}_village.db"],
-        "qa": ["qa.json", f"{challenge_id}_qa.json"],
-        "brief": ["brief.md", f"{challenge_id}_brief.md"],
-        "schema": ["schema.json", f"{challenge_id}_schema.json"],
-        "questions": ["questions.json", f"{challenge_id}_questions.json"],
+        "db": ["village_normalized.db", "village_star.db", "village.db"],
+        "brief": ["brief.md"],
+        "questions": ["questions.json"],
+        "schema": ["schema.json"],
+        "qa": ["qa.json"],
     }
 
     for file_type, candidates in needed.items():
@@ -53,31 +54,23 @@ def download_challenge(
     """Download challenge files from GitHub release."""
     cache = cache_dir or os.path.join(DEFAULT_CACHE_DIR, challenge_id)
     os.makedirs(cache, exist_ok=True)
-
     if not force:
         files = find_challenge_files(challenge_id, data_dir=cache)
         if "db" in files:
             return files
-
     try:
         import requests
         tag = f"challenge-{challenge_id}"
         api_url = f"https://api.github.com/repos/{github_repo}/releases/tags/{tag}"
         resp = requests.get(api_url, timeout=10)
         if resp.status_code == 200:
-            release = resp.json()
-            for asset in release.get("assets", []):
-                name = asset["name"]
-                dl_url = asset["browser_download_url"]
-                local_path = os.path.join(cache, name)
-                if not os.path.exists(local_path) or force:
-                    print(f"  Downloading {name}...")
-                    r = requests.get(dl_url, timeout=120)
-                    with open(local_path, "wb") as f:
+            for asset in resp.json().get("assets", []):
+                local = os.path.join(cache, asset["name"])
+                if not os.path.exists(local) or force:
+                    print(f"  Downloading {asset['name']}...")
+                    r = requests.get(asset["browser_download_url"], timeout=120)
+                    with open(local, "wb") as f:
                         f.write(r.content)
-        else:
-            print(f"  Note: Release not found for {tag}. Using local files.")
     except Exception as e:
-        print(f"  Note: Could not download: {e}. Using local files.")
-
+        print(f"  Note: Could not download: {e}")
     return find_challenge_files(challenge_id, data_dir=cache)
