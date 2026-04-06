@@ -1,0 +1,77 @@
+{
+  "challenge_id": "ch01",
+  "title": "Open for Business",
+  "total_questions": 10,
+  "questions": [
+    {
+      "id": "Q1",
+      "category": "Revenue",
+      "difficulty": "basic",
+      "question": "What is the total revenue over the entire period? What is the average daily revenue?",
+      "hint": "Use the transactions table and GROUP BY date"
+    },
+    {
+      "id": "Q2",
+      "category": "Revenue",
+      "difficulty": "basic",
+      "question": "Which day of the week generates the most revenue? Is there a weekend vs weekday pattern?",
+      "hint": "Join transactions with calendar to get day_of_week"
+    },
+    {
+      "id": "Q3",
+      "category": "Revenue",
+      "difficulty": "intermediate",
+      "question": "How does revenue change around payday (25th-end of month)? Quantify the payday uplift.",
+      "hint": "Compare is_payday_week = 1 vs 0 in transactions"
+    },
+    {
+      "id": "Q4",
+      "category": "Products",
+      "difficulty": "basic",
+      "question": "What are the top 10 products by revenue? What product categories drive the most sales?",
+      "hint": "Join transaction_items with products, GROUP BY product or category"
+    },
+    {
+      "id": "Q5",
+      "category": "Products",
+      "difficulty": "intermediate",
+      "question": "Which products have the most stockouts? How much revenue is lost due to stockouts?",
+      "hint": "Filter transaction_items WHERE had_stockout = 1, calculate (quantity_wanted - quantity_sold) * unit_price"
+    },
+    {
+      "id": "Q6",
+      "category": "Customers",
+      "difficulty": "basic",
+      "question": "How many unique customers are there? What is the average basket size and visit frequency?",
+      "hint": "COUNT DISTINCT customer_id, AVG(total_amount_thb), visits per customer"
+    },
+    {
+      "id": "Q7",
+      "category": "Customers",
+      "difficulty": "intermediate",
+      "question": "Do high-income customers spend differently from low-income customers? Compare basket size, visit frequency, and product preferences.",
+      "hint": "Join transactions with customers, GROUP BY income_bracket"
+    },
+    {
+      "id": "Q8",
+      "category": "Customers",
+      "difficulty": "advanced",
+      "question": "Which customers are at risk of churning? What signals predict churn?",
+      "hint": "Check customer_lifecycle for at_risk/churned transitions. What do these customers have in common?"
+    },
+    {
+      "id": "Q9",
+      "category": "Operations",
+      "difficulty": "intermediate",
+      "question": "What is the total waste cost? Which products contribute most to waste?",
+      "hint": "Use waste_log, join with products, GROUP BY product"
+    },
+    {
+      "id": "Q10",
+      "category": "Strategy",
+      "difficulty": "advanced",
+      "question": "If you had 10,000 THB budget, what single action would have the biggest impact on revenue? Justify with data.",
+      "hint": "Consider: win-back campaigns, stockout reduction, promotions, product mix changes"
+    }
+  ]
+}

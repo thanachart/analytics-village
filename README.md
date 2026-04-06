@@ -51,18 +51,23 @@ Each challenge comes with **two SQLite databases** containing the same data in d
 
 ## Quick Start
 
+**Pick a notebook:**
+- [CH01 Normalized](notebooks/ch01_normalized.ipynb) — practice SQL joins
+- [CH01 Star Schema](notebooks/ch01_star.ipynb) — focus on analysis
+
+Or run locally:
 ```python
-import sys; sys.path.insert(0, '.')
 from student import Challenge, Decision
 
-# Load normalized DB (for data prep practice)
-ch = Challenge.load('ch01', data_dir='challenges/ch01/data')
+# Option A: Normalized (practice joins)
+ch = Challenge.load('ch01', data_dir='challenges/ch01/data', db_name='village_normalized.db')
 
-# Or load star schema DB (for analysis)
-# ch = Challenge.load('ch01', data_dir='challenges/ch01/data', db_name='village_star.db')
+# Option B: Star schema (focus on analysis)
+ch = Challenge.load('ch01', data_dir='challenges/ch01/data', db_name='village_star.db')
 
-ch.brief()
-ch.db.tables()
+ch.brief()         # Challenge description
+ch.questions()     # 10 guided questions
+ch.db.tables()     # See database tables
 ```
 
 ---
@@ -84,12 +89,16 @@ challenges/ch01/
     data/
         village_normalized.db   ERP/CRM style (practice joins)
         village_star.db         Star schema (focus on analysis)
-    brief.md                    Challenge description
+    brief.md                    Challenge description and context
+    questions.json              10 guided analysis questions
     schema.json                 Submission requirements
 
-student/                        Python utilities
-notebooks/                      Guided analysis notebooks
-submissions/                    Submit your JSON here via PR
+notebooks/
+    ch01_normalized.ipynb       Notebook for normalized DB
+    ch01_star.ipynb             Notebook for star schema DB
+
+student/                        Python utilities (Challenge, Decision)
+submissions/ch01/               Submit your JSON here via PR
 ```
 
 ---

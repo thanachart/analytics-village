@@ -28,6 +28,7 @@ def find_challenge_files(challenge_id: str, data_dir: str | None = None) -> dict
         "qa": ["qa.json", f"{challenge_id}_qa.json"],
         "brief": ["brief.md", f"{challenge_id}_brief.md"],
         "schema": ["schema.json", f"{challenge_id}_schema.json"],
+        "questions": ["questions.json", f"{challenge_id}_questions.json"],
     }
 
     for file_type, candidates in needed.items():

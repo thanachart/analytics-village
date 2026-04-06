@@ -30,6 +30,7 @@ class Challenge:
         qa_path: str | None = None,
         brief_path: str | None = None,
         schema_path: str | None = None,
+        questions_path: str | None = None,
         primary_business: str = "supermarket",
     ):
         self._challenge_id = challenge_id
@@ -37,6 +38,7 @@ class Challenge:
         self._qa_path = qa_path
         self._brief_path = brief_path
         self._schema_path = schema_path
+        self._questions_path = questions_path
         self._primary_business = primary_business
 
         self._db = DatabaseProxy(db_path, primary_business=primary_business)
@@ -90,21 +92,37 @@ class Challenge:
             qa_path=files.get("qa"),
             brief_path=files.get("brief"),
             schema_path=files.get("schema"),
+            questions_path=files.get("questions"),
             primary_business=primary_business,
         )
 
         # Print summary
         db_size = os.path.getsize(files["db"]) / (1024 * 1024)
-        sku_count = len(ch.db.query("SELECT sku_id FROM skus"))
-        hh_count = len(ch.db.query("SELECT household_id FROM households"))
-        day_range = ch.db.query("SELECT MIN(day) AS mn, MAX(day) AS mx FROM transactions")
+
+        # Detect table names (normalized vs star schema)
+        tables = ch.db.query("SELECT name FROM sqlite_master WHERE type='table'")["name"].tolist()
+        if "products" in tables:
+            prod_count = len(ch.db.query("SELECT product_id FROM products"))
+            cust_count = len(ch.db.query("SELECT customer_id FROM customers"))
+            day_range = ch.db.query("SELECT MIN(transaction_date) AS mn, MAX(transaction_date) AS mx FROM transactions")
+            schema_type = "normalized"
+        elif "dim_product" in tables:
+            prod_count = len(ch.db.query("SELECT product_key FROM dim_product"))
+            cust_count = len(ch.db.query("SELECT customer_key FROM dim_customer"))
+            day_range = ch.db.query("SELECT MIN(date_key) AS mn, MAX(date_key) AS mx FROM fact_sales")
+            schema_type = "star"
+        else:
+            prod_count = cust_count = 0
+            day_range = None
+            schema_type = "unknown"
+
         days = "?"
-        if len(day_range) > 0:
+        if day_range is not None and len(day_range) > 0:
             mn, mx = day_range.iloc[0]["mn"], day_range.iloc[0]["mx"]
             days = f"{mn} to {mx}" if mn is not None else "?"
 
-        print(f"+ Loaded challenge: {challenge_id.upper()}")
-        print(f"+ Database: {db_size:.1f} MB | {sku_count} SKUs | {hh_count} households | days {days}")
+        print(f"+ Loaded challenge: {challenge_id.upper()} ({schema_type} schema)")
+        print(f"+ Database: {db_size:.1f} MB | {prod_count} products | {cust_count} customers | {days}")
         if ch._owner:
             print(f"+ Owner: {ch._owner._owner_name} | {len(ch._owner._qa)} questions available")
         print(f"Ready. Start with: ch.brief()  or  ch.db.tables()")
@@ -150,6 +168,38 @@ class Challenge:
             with open(self._schema_path) as f:
                 return json.load(f)
         return None
+
+    def questions(self) -> None:
+        """Display challenge questions that guide your analysis."""
+        if not self._questions_path or not os.path.exists(self._questions_path):
+            # Try to find questions.json near the brief
+            if self._brief_path:
+                qp = os.path.join(os.path.dirname(self._brief_path), "questions.json")
+                if os.path.exists(qp):
+                    self._questions_path = qp
+
+        if not self._questions_path or not os.path.exists(self._questions_path):
+            print("No questions file found for this challenge.")
+            return
+
+        import json
+        with open(self._questions_path, encoding="utf-8") as f:
+            data = json.load(f)
+
+        title = data.get("title", self._challenge_id)
+        qs = data.get("questions", [])
+        print(f"\n{'=' * 60}")
+        print(f"Challenge Questions: {title}")
+        print(f"{'=' * 60}")
+        for q in qs:
+            diff_color = {"basic": "", "intermediate": " *", "advanced": " **"}
+            diff = diff_color.get(q.get("difficulty", ""), "")
+            print(f"\n  [{q['id']}] {q['category']}{diff}")
+            print(f"  {q['question']}")
+            if q.get("hint"):
+                print(f"  Hint: {q['hint']}")
+        print(f"\n{'=' * 60}")
+        print(f"{len(qs)} questions total. * = intermediate, ** = advanced")
 
     def status(self) -> None:
         """Display current challenge status."""
