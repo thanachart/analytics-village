@@ -52,8 +52,9 @@ Each challenge comes with **two SQLite databases** containing the same data in d
 ## Quick Start
 
 **Pick a notebook:**
-- [CH01 Normalized](notebooks/ch01_normalized.ipynb) — practice SQL joins
-- [CH01 Star Schema](notebooks/ch01_star.ipynb) — focus on analysis
+- [CH01 Normalized](notebooks/ch01_normalized.ipynb) — practice SQL joins & data prep
+- [CH01 Star Schema](notebooks/ch01_star.ipynb) — focus on analysis with flat tables
+- [CH01 Analytics Workbook](notebooks/ch01_analytics.ipynb) — learn to build cohort, churn, basket, segmentation tables
 
 Or run locally:
 ```python
