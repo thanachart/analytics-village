@@ -1,52 +1,46 @@
 # Analytics Village
 
-A simulated village economy for learning real-world data analytics.
+A simulated village economy for learning data analytics.
+
+## How It Works
+
+A Thai village with **150 households** shops at a local supermarket over 90 days. The simulation generates realistic transaction data — what people buy, when they buy it, how much they spend, and what goes in and out of stock.
+
+You get the raw data. Your job: find patterns, answer questions, and recommend actions.
 
 ## Challenges
 
-| ID | Title | Business |
-|----|-------|----------|
-| [CH01](challenges/ch01/) | Open for Business | Village Fresh Supermarket |
+| Challenge | Title | What You'll Learn |
+|-----------|-------|-------------------|
+| [CH01](challenges/ch01/) | Open for Business | Revenue analysis, customer behavior, inventory patterns |
 
-## Quick Start
+Each challenge folder contains everything you need:
+- **Notebooks** — guided analysis with SQL examples
+- **Data** — SQLite databases (normalized + star schema)
+- **Questions** — 10 guided analysis questions
+- **Utilities** — Python helpers to load and explore data
 
-Open a notebook from the challenge folder:
+## Getting Started
 
-- [CH01 Normalized](challenges/ch01/ch01_normalized.ipynb) — practice SQL joins
-- [CH01 Star Schema](challenges/ch01/ch01_star.ipynb) — analysis with flat tables
-- [CH01 Analytics](challenges/ch01/ch01_analytics.ipynb) — build cohort, churn, segmentation
+1. Open a challenge folder (e.g. `challenges/ch01/`)
+2. Pick a notebook:
+   - `ch01_normalized.ipynb` — practice SQL joins
+   - `ch01_star.ipynb` — focus on analysis
+   - `ch01_analytics.ipynb` — build cohort, churn, segmentation
+3. Run the first cell to download data and start exploring
 
-## Student Tables
+## Student Data (4 Tables)
 
-Each challenge has **4 tables**:
+Every challenge gives you the same 4 clean tables:
 
-| Table | Columns |
-|-------|---------|
-| `products` | product_id, product_name, product_name_th, category, subcategory, unit_description |
-| `calendar` | date, day_number, day_of_week, day_of_month, month, year, is_weekend, is_payday_week, event_name, event_type |
-| `transactions` | transaction_id, transaction_date, customer_id, product_id, quantity_sold, unit_price_thb |
-| `inventory` | record_date, product_id, opening_stock, units_sold, units_received, closing_stock |
+| Table | What's in it |
+|-------|-------------|
+| **products** | Product catalogue — name, category, unit description |
+| **calendar** | Dates with day-of-week, month, weekend/payday flags, events |
+| **transactions** | Every item sold — date, customer, product, quantity, price |
+| **inventory** | Daily stock levels — opening, sold, received, closing |
 
-## Two Database Formats
-
-- **`village_normalized.db`** — 4 separate tables, practice SQL joins
-- **`village_star.db`** — `dim_product`, `dim_date`, `fact_sales`, `fact_inventory` (pre-joined)
-
-## Structure
-
-```
-challenges/ch01/
-    data/
-        village_normalized.db
-        village_star.db
-    brief.md
-    questions.json
-    ch01_normalized.ipynb
-    ch01_star.ipynb
-    ch01_analytics.ipynb
-
-student/                Python utilities (Challenge class)
-```
+Everything else (customer segments, churn, revenue trends) — you derive from these tables.
 
 ## Requirements
 
@@ -54,3 +48,5 @@ student/                Python utilities (Challenge class)
 pandas
 tabulate
 ```
+
+No API keys. No LLM. Everything runs locally or in Google Colab.
