@@ -103,12 +103,12 @@ class Challenge:
         tables = ch.db.query("SELECT name FROM sqlite_master WHERE type='table'")["name"].tolist()
         if "products" in tables:
             prod_count = len(ch.db.query("SELECT product_id FROM products"))
-            cust_count = len(ch.db.query("SELECT customer_id FROM customers"))
+            cust_count = ch.db.query("SELECT COUNT(DISTINCT customer_id) AS n FROM transactions").iloc[0]["n"]
             day_range = ch.db.query("SELECT MIN(transaction_date) AS mn, MAX(transaction_date) AS mx FROM transactions")
             schema_type = "normalized"
         elif "dim_product" in tables:
             prod_count = len(ch.db.query("SELECT product_key FROM dim_product"))
-            cust_count = len(ch.db.query("SELECT customer_key FROM dim_customer"))
+            cust_count = ch.db.query("SELECT COUNT(DISTINCT customer_id) AS n FROM fact_sales").iloc[0]["n"]
             day_range = ch.db.query("SELECT MIN(date_key) AS mn, MAX(date_key) AS mx FROM fact_sales")
             schema_type = "star"
         else:
