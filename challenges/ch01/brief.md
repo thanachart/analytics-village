@@ -1,50 +1,38 @@
-# CH01 — Open for Business
+# CH01 - Analytics Challenge
 
 ## Your Client
 
-**Khun Somchai** has been running **Village Fresh Supermarket** for 8 years in a small Thai village. It's the main grocery store for ~150 households. He's proud of his store but worried about recent trends he can't quite put into numbers.
+You've been hired as a data analyst consultant for a small business in a Thai village.
 
 ## The Situation
 
-Somchai has 90 days of data (Aug 15 – Nov 12, 2024) covering:
-- ~5,000 transactions across 150 customer households
-- 59 products (dairy, produce, meat, dry goods, beverages, snacks, household, frozen)
-- Daily inventory levels, stockout events, and waste
-- Customer visit patterns and lifecycle states
-- Competitor visits to the wet market and convenience store
-
-He wants to understand: **How is my business really doing, and what should I do next?**
+The business owner has 90 days of historical data and needs your help understanding their business performance and making data-driven decisions.
 
 ## Your Task
 
-1. **Explore the data** — Understand revenue patterns, customer behavior, and operations
-2. **Answer the challenge questions** — See `questions.json` or run `ch.questions()`
-3. **Find insights** — What patterns does the data reveal that Somchai might not see?
-4. **Make a recommendation** — Propose ONE specific, actionable plan with budget ≤ 10,000 THB
+1. **Explore the data** - Use SQL and Python to understand the business
+2. **Consult the owner** - Ask questions to understand context beyond the numbers
+3. **Analyse patterns** - Find insights that the owner might not see
+4. **Make a recommendation** - Propose a specific, actionable plan
 
-## Two Database Options
+## Data Available
 
-| Database | Use when |
-|----------|----------|
-| `village_normalized.db` | You want to practice **SQL joins and data preparation** |
-| `village_star.db` | You want to focus on **analysis with pre-joined tables** |
+You have access to a SQLite database with transaction records, customer data, inventory logs, and more. Use `ep.db.tables()` to see what's available.
 
 ## Budget
 
-Up to **10,000 THB** for any recommended actions.
+You have up to **10,000 THB** for any recommended actions.
+
+## Deadline
+
+Submit your `decision.json` before the deadline shown in `ep.status()`.
 
 ## Getting Started
 
 ```python
-from student import Challenge, Decision
-
-# Option A: Normalized (practice joins)
-ch = Challenge.load('ch01', data_dir='challenges/ch01/data', db_name='village_normalized.db')
-
-# Option B: Star schema (focus on analysis)
-ch = Challenge.load('ch01', data_dir='challenges/ch01/data', db_name='village_star.db')
-
-ch.brief()        # This brief
-ch.questions()    # Challenge questions
-ch.db.tables()    # See available tables
+from analytics_village import Episode, Decision
+ep = Episode.load("ch01")
+ep.brief()
+ep.owner.questions()
+ep.db.tables()
 ```
