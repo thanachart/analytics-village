@@ -1,41 +1,34 @@
+
+# IDE
 # Instructor-only (not in public repo)
-simulation/
-server/
-frontend/
+# Local state
+# Node
+# OS
+# Python
+# SQLite temp
+*.db-journal
+*.db-shm
+*.db-wal
+*.egg
+*.egg-info/
+*.py[cod]
+*.swp
+.DS_Store
 .claude/
+.idea/
+.venv/
+.vscode/
+Thumbs.db
+__pycache__/
+build/
 data/
-tests/
+facilitator.db
+frontend/
+node_modules/
 output/
 output_test/
 pyproject.toml
-
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
-build/
-*.egg
-.venv/
-
-# SQLite temp
-*.db-shm
-*.db-wal
-*.db-journal
-
-# Local state
-facilitator.db
+server/
+simulation/
 test_village.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Node
-node_modules/
-*.db-shm
-*.db-wal
+tests/
