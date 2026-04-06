@@ -24,7 +24,7 @@ def find_challenge_files(challenge_id: str, data_dir: str | None = None) -> dict
 
     files = {}
     needed = {
-        "db": ["village.db", f"{challenge_id}_village.db", f"{challenge_id}.db"],
+        "db": ["village_normalized.db", "village_star.db", "village.db", f"{challenge_id}_village.db"],
         "qa": ["qa.json", f"{challenge_id}_qa.json"],
         "brief": ["brief.md", f"{challenge_id}_brief.md"],
         "schema": ["schema.json", f"{challenge_id}_schema.json"],

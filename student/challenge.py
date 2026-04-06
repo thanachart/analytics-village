@@ -51,13 +51,17 @@ class Challenge:
         github_repo: str = "thanachart/analytics-village",
         force_download: bool = False,
         primary_business: str = "supermarket",
+        db_name: str = None,
     ) -> Challenge:
         """
         Load a challenge by ID.
 
+        Parameters:
+            db_name: Choose database: 'village_normalized.db' (default) or 'village_star.db'
+
         Examples:
-            ch = Challenge.load("ch01")
             ch = Challenge.load("ch01", data_dir="challenges/ch01/data")
+            ch = Challenge.load("ch01", data_dir="challenges/ch01/data", db_name="village_star.db")
         """
         if force_download:
             files = download_challenge(challenge_id, github_repo, data_dir, force=True)
@@ -65,6 +69,13 @@ class Challenge:
             files = find_challenge_files(challenge_id, data_dir)
             if "db" not in files:
                 files = download_challenge(challenge_id, github_repo, data_dir)
+
+        # If specific db_name requested, look for it in data_dir
+        if db_name and data_dir:
+            import os
+            specific = os.path.join(data_dir, db_name)
+            if os.path.exists(specific):
+                files["db"] = specific
 
         if "db" not in files:
             raise FileNotFoundError(
